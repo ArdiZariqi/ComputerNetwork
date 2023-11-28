@@ -1,28 +1,40 @@
-const prompt = require("prompt-sync")({ sigint: true });
-var PORT = 33333;
-const clientIP = prompt("Sheno IP Addresen tuaj: ");
-var client = clientIP;
-const ipAddress = prompt("Sheno IP Addresen me te cilen doni te lidheni : ");
-var HOST = ipAddress;
-const fs = require('fs');
-var path = 'example.txt';
-errorcode = "NUK KENI QASJE!"
+const UDP = require('dgram');
+const readline = require('readline');
 
+const client = UDP.createSocket('udp4');
+const serverPort = 2222;  // Replace with the server's port
+const serverAddress = '192.168.1.18';  // Replace with the server's IP address
 
-var dgram = require('dgram');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
+function sendRequest(command, data) {
+    const request = Buffer.from(`${command} ${data}`);
+    client.send(request, serverPort, serverAddress, (err) => {
+        if (err) {
+            console.error(`Failed to send ${command} request!`, err);
+        } else {
+            console.log(`${command} request sent!`);
+        }
+    });
+}
 
-if (client == '172.16.4.22') {
-    console.log("\nKeni qasje ne lexim the mbishkrim te file");
-    fs.chmod("example.txt", 0o600, () => {
-
-        console.log("\nPermbajtja e file");
-        console.log(fs.readFileSync("example.txt", 'utf8'));
-        const ndryshimi = prompt("Ndryshoni file si read and write: ");
-
-        console.log("Ndryshimi i bere: ");
-        fs.appendFileSync('example.txt', ndryshimi);
-        console.log(fs.readFileSync("example.txt", 'utf8'));
-
+function handleUserOptions() {
+    rl.question('Choose an option:\n1. Read from file\n2. Write to file\n3. Send a message\n4. Execute file\nAny other number to exit\n', (choice) => {
+        const option = parseInt(choice, 10);
+        if (option === 1) {
+            readFromFile();
+        } else if (option === 2) {
+            writeToFile();
+        } else if (option === 3) {
+            sendMessage();
+        } else if (option === 4) {
+            executeCommand();
+        } else {
+            rl.close();
+            process.exit();
+        }
     });
 }
