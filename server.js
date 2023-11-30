@@ -5,7 +5,7 @@ const server = UDP.createSocket('udp4');
 const serverPort = 2222;
 const serverAddress = '0.0.0.0';
 
-const allowedFullAccessClient = { clientIpAddress: '192.168.0.109' };
+const allowedFullAccessClient = { clientIpAddress: '10.11.65.19' };
 
 const connectedClients = [];
 
@@ -38,16 +38,22 @@ server.on('message', (message, remote) => {
             default:
                 console.log('Invalid command from client');
         }
-    } else {
-        if (command === 'READ') {
-            handleReadFile(request.slice(1).join(' '), remote);
-        } else {
-            const response = Buffer.from(`You don't have permissions to ${command}`);
-            server.send(response, 0, response.length, remote.port, remote.address);
-            console.log(`Unauthorized access attempt from ${remote.address}:${remote.port}`);
+    } else  {
+        switch (command) {
+            case 'READ':
+                handleReadFile(request.slice(1).join(' '), remote);
+                break;
+            case 'MESSAGE':
+                handleMessage(request.slice(1).join(' '), remote);
+                break;
+            default:
+                const response = Buffer.from(`You don't have permissions to ${command}`);
+                server.send(response, 0, response.length, remote.port, remote.address);
+                console.log(`Unauthorized access attempt from ${remote.address}:${remote.port}`);
+                break;
         }
-
-    }
+        
+}
 });
 
 server.bind(serverPort, serverAddress);
