@@ -70,3 +70,58 @@ function handleClientConnect(remote) {
         console.log(`Client connected: ${remote.address}:${remote.port} `);
     }
 }
+function handleReadFile(fileName, remote) {
+    if (!fs.existsSync(fileName)) {
+        const errorMessage = Buffer.from(`File ${fileName} does not exist`);
+        server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address);
+        return;
+    }
+
+    fs.readFile(fileName, 'utf-8', (err, data) => {
+        if (err) {
+            console.error(`Error reading file: ${err.message} `);
+            const errorMessage = Buffer.from(`Error reading file: ${err.message} `)
+            server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address)
+        } else {
+            const fileContent = Buffer.from(data);
+            server.send(fileContent, 0, fileContent.length, remote.port, remote.address)
+        }
+    })
+}
+
+function handleWriteFile(fileData, remote) {
+    const [fileName, content] = fileData.split(';');
+    fs.writeFile(fileName, content, 'utf8', (err) => {
+        if (err) {
+            const errorMessage = Buffer.from(`Error writing to file ${fileName} `);
+            console.error(errorMessage);
+            server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address);
+        } else {
+            const successMessage = `File ${fileName} written successfully!`;
+            console.log(successMessage);
+            server.send(successMessage, 0, successMessage.length, remote.port, remote.address)
+        }
+    });
+}
+
+function handleMessage(message, remote) {
+    console.log(`Received message from client ${remote.address}:${remote.port}: ${message} `);
+    const response = Buffer.from(`Server received your message: ${message} `);
+    server.send(response, 0, response.length, remote.port, remote.address);
+}
+
+function handleExecuteCommand(command, remote) {
+    console.log(`Executing command from ${remote.address}:${remote.port}: ${command} `);
+    const exec = require('child_process').exec;
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing command: ${error.message} `);
+            const errorMessage = Buffer.from(`Error executing command: ${error.message} `);
+            server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address);
+        } else {
+            console.log(`Command executed successfully: \n${stdout} `);
+            const successMessage = Buffer.from(`Command executed successfully: \n${stdout} `);
+            server.send(successMessage, 0, successMessage.length, remote.port, remote.address);
+        }
+    });
+}
