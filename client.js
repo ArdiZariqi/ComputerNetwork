@@ -2,8 +2,8 @@ const UDP = require('dgram');
 const readline = require('readline');
 
 const client = UDP.createSocket('udp4');
-const serverPort = 2222;  // Replace with the server's port
-const serverAddress = '10.11.68.207';  // Replace with the server's IP address
+const serverPort = 2222;
+const serverAddress = '10.11.68.207';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -22,7 +22,7 @@ function sendRequest(command, data) {
 }
 
 function handleUserOptions() {
-    rl.question('Choose an option:\n1. Read from file\n2. Write to file\n3. Send a message\n4. Execute file\nAny other number to exit\n', (choice) => {
+    rl.question('Choose an option:\n1. Read from file\n2. Write to file\n3. Send a message\n4. Execute file\nAny other key to exit\n', (choice) => {
         const option = parseInt(choice, 10);
         if (option === 1) {
             readFromFile();
@@ -74,8 +74,6 @@ function waitForResponse() {
     });
 }
 
-// Call waitForResponse to start listening for server responses
 waitForResponse();
 
-// Start the initial user interaction
 handleUserOptions();

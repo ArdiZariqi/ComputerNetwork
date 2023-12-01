@@ -11,7 +11,7 @@ const connectedClients = [];
 
 server.on('listening', function () {
     var address = server.address();
-    console.log(`Serveri udp eshte aktiv ne adresen:  ${address.address}:${address.port}`);
+    console.log(`UDP server is active in address:  ${address.address}:${address.port}`);
 });
 
 server.on('message', (message, remote) => {
