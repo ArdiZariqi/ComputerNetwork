@@ -20,7 +20,6 @@ server.on('message', (message, remote) => {
 
     handleClientConnect(remote);
 
-    // Check if the client is allowed for full access
     if (remote.address == allowedFullAccessClient.clientIpAddress) {
         switch (command) {
             case 'READ':
@@ -38,7 +37,7 @@ server.on('message', (message, remote) => {
             default:
                 console.log('Invalid command from client');
         }
-    } else  {
+    } else {
         switch (command) {
             case 'READ':
                 handleReadFile(request.slice(1).join(' '), remote);
@@ -52,8 +51,7 @@ server.on('message', (message, remote) => {
                 console.log(`Unauthorized access attempt from ${remote.address}:${remote.port}`);
                 break;
         }
-        
-}
+    }
 });
 
 server.bind(serverPort, serverAddress);
@@ -92,7 +90,7 @@ function handleReadFile(fileName, remote) {
             const fileContent = Buffer.from(data);
             server.send(fileContent, 0, fileContent.length, remote.port, remote.address)
         }
-    })
+    });
 }
 
 function handleWriteFile(fileData, remote) {
