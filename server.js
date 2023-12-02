@@ -1,9 +1,10 @@
 const UDP = require('dgram');
 const fs = require('fs');
-
+//  Server dëgjon në adresën IP "0.0.0.0" dhe portin 2222.
 const server = UDP.createSocket('udp4');
 const serverPort = 2222;
 const serverAddress = '0.0.0.0';
+// Përcakton një adresë IP (10.11.65.19) të cilës i jepet akses i plotë.
 
 const allowedFullAccessClient = { clientIpAddress: '10.11.65.19' };
 
