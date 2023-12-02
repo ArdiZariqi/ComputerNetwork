@@ -3,7 +3,7 @@ const readline = require('readline');
 
 const client = UDP.createSocket('udp4');
 const serverPort = 2222;
-const serverAddress = '10.11.68.207';// Replace with the server's IP address
+const serverAddress = '10.11.68.207'; // Replace with the server's IP address
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -65,16 +65,16 @@ function sendMessage() {
     });
 }
 
-function executeCommand() {
-    rl.question('Enter a command to execute on the server: ', (command) => {
-        sendRequest('EXECUTE', command);
-    });
-}
-
 function waitForResponse() {
     client.on('message', (message) => {
         console.log('Response from server: ', message.toString());
         handleUserOptions();
+    });
+}
+
+function executeCommand() {
+    rl.question('Enter a command to execute on the server: ', (command) => {
+        sendRequest('EXECUTE', command);
     });
 }
 
