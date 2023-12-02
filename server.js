@@ -107,7 +107,6 @@ function handleWriteFile(fileData, remote) {
         }
     });
 }
-
 function handleMessage(message, remote) {
     console.log(`Received message from client ${remote.address}:${remote.port}: ${message} `);
     const response = Buffer.from(`Server received your message: ${message} `);
