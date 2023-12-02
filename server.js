@@ -101,15 +101,16 @@ function handleReadFile(fileName, remote) {
 
 function handleWriteFile(fileData, remote) {
     const [fileName, content] = fileData.split(';');
-    fs.writeFile(fileName, content, 'utf8', (err) => {
+
+    fs.appendFile(fileName, content, 'utf8', (err) => {
         if (err) {
-            const errorMessage = Buffer.from(`Error writing to file ${fileName} `);
+            const errorMessage = Buffer.from(`Error appending to file ${fileName}`);
             console.error(errorMessage);
             server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address);
         } else {
-            const successMessage = `Client ${remote.address} has successfully updated ${fileName} file!`;
+            const successMessage = `Content appended to file ${fileName} successfully!`;
             console.log(successMessage);
-            server.send(successMessage, 0, successMessage.length, remote.port, remote.address)
+            server.send(successMessage, 0, successMessage.length, remote.port, remote.address);
         }
     });
 }
