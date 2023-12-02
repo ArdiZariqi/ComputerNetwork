@@ -7,8 +7,6 @@ const serverAddress = '0.0.0.0';
 
 const allowedFullAccessClient = { clientIpAddress: '10.11.65.19' };
 
-const connectedClients = [];
-
 server.on('listening', function () {
     var address = server.address();
     console.log(`UDP server is active in address:  ${address.address}:${address.port}`);
@@ -19,6 +17,8 @@ server.on('message', (message, remote) => {
     const command = request[0].toUpperCase();
 
     handleClientConnect(remote);
+
+    console.log(`Client ${remote.address} is trying to ${command}`);
 
     if (remote.address == allowedFullAccessClient.clientIpAddress) {
         switch (command) {
@@ -64,6 +64,8 @@ process.on('SIGINT', () => {
     });
 });
 
+const connectedClients = [];
+
 function handleClientConnect(remote) {
     const existingClient = connectedClients.find(
         (client) => client.address === remote.address && client.port === remote.port
@@ -74,9 +76,11 @@ function handleClientConnect(remote) {
         console.log(`Client connected: ${remote.address}:${remote.port} `);
     }
 }
+
 function handleReadFile(fileName, remote) {
     if (!fs.existsSync(fileName)) {
         const errorMessage = Buffer.from(`File ${fileName} does not exist`);
+        console.log(errorMessage);
         server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address);
         return;
     }
@@ -87,6 +91,8 @@ function handleReadFile(fileName, remote) {
             const errorMessage = Buffer.from(`Error reading file: ${err.message} `)
             server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address)
         } else {
+            const successReadMessage = `Client ${remote.address} has successfully read the contents of the file`;
+            console.log(successReadMessage);
             const fileContent = Buffer.from(data);
             server.send(fileContent, 0, fileContent.length, remote.port, remote.address)
         }
@@ -101,12 +107,13 @@ function handleWriteFile(fileData, remote) {
             console.error(errorMessage);
             server.send(errorMessage, 0, errorMessage.length, remote.port, remote.address);
         } else {
-            const successMessage = `File ${fileName} written successfully!`;
+            const successMessage = `Client ${remote.address} has successfully updated ${fileName} file!`;
             console.log(successMessage);
             server.send(successMessage, 0, successMessage.length, remote.port, remote.address)
         }
     });
 }
+
 function handleMessage(message, remote) {
     console.log(`Received message from client ${remote.address}:${remote.port}: ${message} `);
     const response = Buffer.from(`Server received your message: ${message} `);
