@@ -11,12 +11,14 @@ const rl = readline.createInterface({
 });
 
 function sendRequest(command, data) {
-    const request = Buffer.from(`${command} ${data}`);
+    const message = `${command} ${data}`;
+    const request = Buffer.from(message);
+
     client.send(request, serverPort, serverAddress, (err) => {
         if (err) {
             console.error(`Failed to send ${command} request!`, err);
         } else {
-            console.log(`${command} request sent!`);
+            console.log(`${command} request sent: ${message}`);
         }
     });
 }
@@ -33,8 +35,8 @@ function handleUserOptions() {
         } else if (option === 4) {
             executeCommand();
         } else {
+            client.close();
             rl.close();
-            process.exit();
         }
     });
 }
@@ -46,9 +48,11 @@ function readFromFile() {
 
 function writeToFile() {
     rl.question('Enter the file name and content to write (e.g., filename;content): ', (fileData) => {
-        if (fileData.trim() === "") {
-            console.error('Invalid input. Please provide file name and content.');
-            handleUserOptions();
+        const parts = fileData.split(';');
+
+        if (parts.length !== 2 || parts.some(part => part.trim() === "")) {
+            console.error('Invalid input. Please provide file name and content in the correct format.');
+            writeToFile();
             return;
         }
         sendRequest('WRITE', fileData);
