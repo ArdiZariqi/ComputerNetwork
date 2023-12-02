@@ -31,3 +31,9 @@ Krjimi i nje serverit dhe nje klienti me NodeJs ku 4 pajisje te kycura ne nje rr
 7.Të dërgojë mesazh serverit si në formë tekstit;
 
 8.Të ketë qasje të plotë në folderat/ përmbajtjen në server.
+
+## Anetaret e grupit:
+* Anjeza Gashi
+* Anjeza Sfishta
+* Arbnore Qorraj
+* Ardi Zariqi
