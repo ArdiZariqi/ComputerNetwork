@@ -9,7 +9,7 @@ const allowedFullAccessClient = { clientIpAddress: '10.11.65.19' };
 
 server.on('listening', function () {
     var address = server.address();
-    console.log(`UDP server is active in address:  ${address.address}:${address.port}`);
+    console.log(`Listening to:  ${address.address}:${address.port}`);
 });
 
 server.on('message', (message, remote) => {
