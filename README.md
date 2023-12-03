@@ -1,39 +1,39 @@
-# Rrjeta Kompjuterike
+# UDP Client-Server Communication
 
-Krjimi i një serveri dhe një klienti me NodeJs ku 4 apo më shumë pajisje të kycura në një rrjet UDP mund të komunikojnë me anë të sockets.
+## Overview
 
-# Serveri
-1.Të vendosen variabla të cilat përmbajnë numrin e portit (numri i portit të jetë i çfarëdoshëm) dhe IP adresën;
+This project demonstrates a simple UDP client-server communication system. The server listens on IP "0.0.0.0" and port 2222, handling various commands from clients, including reading from files, writing to files, executing commands, and sending messages. The server grants full access to a specific client with IP address '10.11.65.19' and restricts access for other clients to specific commands.
 
-2.Të jetë në gjendje të dëgjojë (listen) të paktën të gjithë anëtaret e grupit;
+The project was developed as part of the "Computer Networks" course, exploring fundamental concepts in networking.
 
-3.Të pranojë kërkesat e pajisjeve që dërgojnë request (ku secili anëtarë i grupit duhet të e ekzekutojë të paktën një kërkesë në server);
+## Contributors
 
-4.Të jetë në gjendje të lexojë mesazhet që dërgohen nga klientët;
-
-5.Të jetë në gjendje të jap qasje të plotë të paktën njërit klient për qasje ne folderat/ përmbajtjen në file-t në server.
-
-
-
-# Klienti
-1.Të krijohet socket lidhja me server;
-
-2.Njëri nga pajisjet (klientët) të ketë privilegjet write(), read(), execute();
-
-3.Klientët tjerë të kenë vetëm read() permission;
-
-4.Të bëhet lidhja me serverin duke përcaktuar sakt portin dhe IP Adresën e serverit;
-
-5.Të definohen saktë socket e serverit dhe lidhja të mos dështojë;
-
-6.Të jetë në gjendje të lexojë përgjigjet që i kthehen nga serveri;
-
-7.Të dërgojë mesazh serverit si në formë tekstit;
-
-8.Të ketë qasje të plotë në folderat/ përmbajtjen në server.
-
-## Anëtarët e grupit:
 * Anjeza Gashi
 * Anjeza Sfishta
 * Arbnore Qorraj
 * Ardi Zariqi
+
+## Technologies Used
+
+- Node.js
+- dgram (UDP module in Node.js)
+- fs (File System module in Node.js)
+
+## Usage
+
+1. Start the server:
+
+    node server.js
+
+2. In a separate terminal, run the client:
+
+    node client.js
+
+3. Follow the prompts to choose different options (read from file, write to file, send a message, execute a command).
+
+## Features
+
+- Read from files
+- Write to files
+- Execute commands
+- Send messages
