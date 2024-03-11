@@ -23,61 +23,52 @@ function sendRequest(command, data) {
     });
 }
 
+function handleServerResponse() {
+    client.on('message', (message) => {
+        console.log('Response from server:', message.toString());
+    });
+}
+
 function handleUserOptions() {
     rl.question('Choose an option:\n1. Read from file\n2. Write to file\n3. Send a message\n4. Execute file\nAny other key to exit\n', (choice) => {
         const option = parseInt(choice, 10);
-        if (option === 1) {
-            readFromFile();
-        } else if (option === 2) {
-            writeToFile();
-        } else if (option === 3) {
-            sendMessage();
-        } else if (option === 4) {
-            executeCommand();
+        
+        switch (option) {
+            case 1:
+                handleUserInput('READ', 'Enter the file name to read: ');
+                break;
+            case 2:
+                handleUserInput('WRITE', 'Enter the file name and content to write (e.g., filename;content): ', validateFileData);
+                break;
+            case 3:
+                handleUserInput('MESSAGE', 'Enter a message to send to the server: ');
+                break;
+            case 4:
+                handleUserInput('EXECUTE', 'Enter a command to execute on the server: ');
+                break;
+            default:
+                client.close();
+                rl.close();
+        }
+    });
+}
+
+function handleUserInput(command, question, validator) {
+    rl.question(question, (userInput) => {
+        if (validator && !validator(userInput)) {
+            console.error('Invalid input. Please try again.');
+            handleUserInput(command, question, validator);
         } else {
-            client.close();
-            rl.close();
+            sendRequest(command, userInput);
         }
     });
 }
-function readFromFile() {
-    rl.question('Enter the file name to read: ', (fileName) => {
-        sendRequest('READ', fileName);
-    });
+
+function validateFileData(fileData) {
+    const parts = fileData.split(';');
+    return parts.length === 2 && !parts.some(part => part.trim() === "");
 }
 
-function writeToFile() {
-    rl.question('Enter the file name and content to write (e.g., filename;content): ', (fileData) => {
-        const parts = fileData.split(';');
-
-        if (parts.length !== 2 || parts.some(part => part.trim() === "")) {
-            console.error('Invalid input. Please provide file name and content in the correct format.');
-            writeToFile();
-            return;
-        }
-        sendRequest('WRITE', fileData);
-    });
-}
-
-function sendMessage() {
-    rl.question('Enter a message to send to the server: ', (userInput) => {
-        sendRequest('MESSAGE', userInput);
-    });
-}
-
-function waitForResponse() {
-    client.on('message', (message) => {
-        console.log('Response from server: ', message.toString());
-        handleUserOptions();
-    });
-}
-
-function executeCommand() {
-    rl.question('Enter a command to execute on the server: ', (command) => {
-        sendRequest('EXECUTE', command);
-    });
-}
-
-waitForResponse();
+handleServerResponse();
 
 handleUserOptions();

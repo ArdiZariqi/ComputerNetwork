@@ -22,38 +22,46 @@ server.on('message', (message, remote) => {
     console.log(`Client ${remote.address} is trying to ${command}`);
 
     if (remote.address == allowedFullAccessClient.clientIpAddress) {
-        switch (command) {
-            case 'READ':
-                handleReadFile(request.slice(1).join(' '), remote);
-                break;
-            case 'WRITE':
-                handleWriteFile(request.slice(1).join(' '), remote);
-                break;
-            case 'EXECUTE':
-                handleExecuteCommand(request.slice(1).join(' '), remote);
-                break;
-            case 'MESSAGE':
-                handleMessage(request.slice(1).join(' '), remote);
-                break;
-            default:
-                console.log('Invalid command from client');
-        }
+        handleFullAccessCommand(command, request.slice(1).join(' '), remote);
     } else {
-        switch (command) {
-            case 'READ':
-                handleReadFile(request.slice(1).join(' '), remote);
-                break;
-            case 'MESSAGE':
-                handleMessage(request.slice(1).join(' '), remote);
-                break;
-            default:
-                const response = Buffer.from(`You don't have permissions to ${command}`);
-                server.send(response, 0, response.length, remote.port, remote.address);
-                console.log(`Unauthorized access attempt from ${remote.address}:${remote.port}`);
-                break;
-        }
+        handleLimitedAccessCommand(command, request.slice(1).join(' '), remote);
     }
 });
+
+function handleFullAccessCommand(command, args, remote) {
+    switch (command) {
+        case 'READ':
+            handleReadFile(args, remote);
+            break;
+        case 'WRITE':
+            handleWriteFile(args, remote);
+            break;
+        case 'EXECUTE':
+            handleExecuteCommand(args, remote);
+            break;
+        case 'MESSAGE':
+            handleMessage(args, remote);
+            break;
+        default:
+            console.log('Invalid command from client');
+    }
+}
+
+function handleLimitedAccessCommand(command, args, remote) {
+    switch (command) {
+        case 'READ':
+            handleReadFile(args, remote);
+            break;
+        case 'MESSAGE':
+            handleMessage(args, remote);
+            break;
+        default:
+            const response = Buffer.from(`You don't have permissions to ${command}`);
+            server.send(response, 0, response.length, remote.port, remote.address);
+            console.log(`Unauthorized access attempt from ${remote.address}:${remote.port}`);
+            break;
+    }
+}
 
 server.bind(serverPort, serverAddress);
 
